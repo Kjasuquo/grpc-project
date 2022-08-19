@@ -11,7 +11,7 @@ func doAdd(d pb.AddServiceClient) {
 
 	ans, err := d.Add(context.Background(), &pb.AddRequest{
 		FirstNum:  3,
-		SecondNum: 10,
+		SecondNum: 1,
 	})
 	if err != nil {
 		log.Fatalf("could not add: %v\n", err)
