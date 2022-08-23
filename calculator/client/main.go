@@ -19,5 +19,8 @@ func main() {
 
 	c := pb.NewPrimeServiceClient(conn)
 
-	doPrime(c)
+	//doPrime(c)
+	//doAverage(c)
+	//doAvg(c)
+	doMax(c)
 }

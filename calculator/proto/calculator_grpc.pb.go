@@ -23,6 +23,9 @@ const _ = grpc.SupportPackageIsVersion7
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type PrimeServiceClient interface {
 	Prime(ctx context.Context, in *PrimeRequest, opts ...grpc.CallOption) (PrimeService_PrimeClient, error)
+	Average(ctx context.Context, opts ...grpc.CallOption) (PrimeService_AverageClient, error)
+	Avg(ctx context.Context, opts ...grpc.CallOption) (PrimeService_AvgClient, error)
+	Max(ctx context.Context, opts ...grpc.CallOption) (PrimeService_MaxClient, error)
 }
 
 type primeServiceClient struct {
@@ -65,11 +68,113 @@ func (x *primeServicePrimeClient) Recv() (*PrimeResponse, error) {
 	return m, nil
 }
 
+func (c *primeServiceClient) Average(ctx context.Context, opts ...grpc.CallOption) (PrimeService_AverageClient, error) {
+	stream, err := c.cc.NewStream(ctx, &PrimeService_ServiceDesc.Streams[1], "/calculator.PrimeService/Average", opts...)
+	if err != nil {
+		return nil, err
+	}
+	x := &primeServiceAverageClient{stream}
+	return x, nil
+}
+
+type PrimeService_AverageClient interface {
+	Send(*PrimeRequest) error
+	CloseAndRecv() (*PrimeResponse, error)
+	grpc.ClientStream
+}
+
+type primeServiceAverageClient struct {
+	grpc.ClientStream
+}
+
+func (x *primeServiceAverageClient) Send(m *PrimeRequest) error {
+	return x.ClientStream.SendMsg(m)
+}
+
+func (x *primeServiceAverageClient) CloseAndRecv() (*PrimeResponse, error) {
+	if err := x.ClientStream.CloseSend(); err != nil {
+		return nil, err
+	}
+	m := new(PrimeResponse)
+	if err := x.ClientStream.RecvMsg(m); err != nil {
+		return nil, err
+	}
+	return m, nil
+}
+
+func (c *primeServiceClient) Avg(ctx context.Context, opts ...grpc.CallOption) (PrimeService_AvgClient, error) {
+	stream, err := c.cc.NewStream(ctx, &PrimeService_ServiceDesc.Streams[2], "/calculator.PrimeService/Avg", opts...)
+	if err != nil {
+		return nil, err
+	}
+	x := &primeServiceAvgClient{stream}
+	return x, nil
+}
+
+type PrimeService_AvgClient interface {
+	Send(*AvgRequest) error
+	CloseAndRecv() (*AvgResponse, error)
+	grpc.ClientStream
+}
+
+type primeServiceAvgClient struct {
+	grpc.ClientStream
+}
+
+func (x *primeServiceAvgClient) Send(m *AvgRequest) error {
+	return x.ClientStream.SendMsg(m)
+}
+
+func (x *primeServiceAvgClient) CloseAndRecv() (*AvgResponse, error) {
+	if err := x.ClientStream.CloseSend(); err != nil {
+		return nil, err
+	}
+	m := new(AvgResponse)
+	if err := x.ClientStream.RecvMsg(m); err != nil {
+		return nil, err
+	}
+	return m, nil
+}
+
+func (c *primeServiceClient) Max(ctx context.Context, opts ...grpc.CallOption) (PrimeService_MaxClient, error) {
+	stream, err := c.cc.NewStream(ctx, &PrimeService_ServiceDesc.Streams[3], "/calculator.PrimeService/Max", opts...)
+	if err != nil {
+		return nil, err
+	}
+	x := &primeServiceMaxClient{stream}
+	return x, nil
+}
+
+type PrimeService_MaxClient interface {
+	Send(*MaxRequest) error
+	Recv() (*MaxResponse, error)
+	grpc.ClientStream
+}
+
+type primeServiceMaxClient struct {
+	grpc.ClientStream
+}
+
+func (x *primeServiceMaxClient) Send(m *MaxRequest) error {
+	return x.ClientStream.SendMsg(m)
+}
+
+func (x *primeServiceMaxClient) Recv() (*MaxResponse, error) {
+	m := new(MaxResponse)
+	if err := x.ClientStream.RecvMsg(m); err != nil {
+		return nil, err
+	}
+	return m, nil
+}
+
 // PrimeServiceServer is the server API for PrimeService service.
 // All implementations must embed UnimplementedPrimeServiceServer
 // for forward compatibility
 type PrimeServiceServer interface {
 	Prime(*PrimeRequest, PrimeService_PrimeServer) error
+	Average(PrimeService_AverageServer) error
+	Avg(PrimeService_AvgServer) error
+	Max(PrimeService_MaxServer) error
 	mustEmbedUnimplementedPrimeServiceServer()
 }
 
@@ -79,6 +184,15 @@ type UnimplementedPrimeServiceServer struct {
 
 func (UnimplementedPrimeServiceServer) Prime(*PrimeRequest, PrimeService_PrimeServer) error {
 	return status.Errorf(codes.Unimplemented, "method Prime not implemented")
+}
+func (UnimplementedPrimeServiceServer) Average(PrimeService_AverageServer) error {
+	return status.Errorf(codes.Unimplemented, "method Average not implemented")
+}
+func (UnimplementedPrimeServiceServer) Avg(PrimeService_AvgServer) error {
+	return status.Errorf(codes.Unimplemented, "method Avg not implemented")
+}
+func (UnimplementedPrimeServiceServer) Max(PrimeService_MaxServer) error {
+	return status.Errorf(codes.Unimplemented, "method Max not implemented")
 }
 func (UnimplementedPrimeServiceServer) mustEmbedUnimplementedPrimeServiceServer() {}
 
@@ -114,6 +228,84 @@ func (x *primeServicePrimeServer) Send(m *PrimeResponse) error {
 	return x.ServerStream.SendMsg(m)
 }
 
+func _PrimeService_Average_Handler(srv interface{}, stream grpc.ServerStream) error {
+	return srv.(PrimeServiceServer).Average(&primeServiceAverageServer{stream})
+}
+
+type PrimeService_AverageServer interface {
+	SendAndClose(*PrimeResponse) error
+	Recv() (*PrimeRequest, error)
+	grpc.ServerStream
+}
+
+type primeServiceAverageServer struct {
+	grpc.ServerStream
+}
+
+func (x *primeServiceAverageServer) SendAndClose(m *PrimeResponse) error {
+	return x.ServerStream.SendMsg(m)
+}
+
+func (x *primeServiceAverageServer) Recv() (*PrimeRequest, error) {
+	m := new(PrimeRequest)
+	if err := x.ServerStream.RecvMsg(m); err != nil {
+		return nil, err
+	}
+	return m, nil
+}
+
+func _PrimeService_Avg_Handler(srv interface{}, stream grpc.ServerStream) error {
+	return srv.(PrimeServiceServer).Avg(&primeServiceAvgServer{stream})
+}
+
+type PrimeService_AvgServer interface {
+	SendAndClose(*AvgResponse) error
+	Recv() (*AvgRequest, error)
+	grpc.ServerStream
+}
+
+type primeServiceAvgServer struct {
+	grpc.ServerStream
+}
+
+func (x *primeServiceAvgServer) SendAndClose(m *AvgResponse) error {
+	return x.ServerStream.SendMsg(m)
+}
+
+func (x *primeServiceAvgServer) Recv() (*AvgRequest, error) {
+	m := new(AvgRequest)
+	if err := x.ServerStream.RecvMsg(m); err != nil {
+		return nil, err
+	}
+	return m, nil
+}
+
+func _PrimeService_Max_Handler(srv interface{}, stream grpc.ServerStream) error {
+	return srv.(PrimeServiceServer).Max(&primeServiceMaxServer{stream})
+}
+
+type PrimeService_MaxServer interface {
+	Send(*MaxResponse) error
+	Recv() (*MaxRequest, error)
+	grpc.ServerStream
+}
+
+type primeServiceMaxServer struct {
+	grpc.ServerStream
+}
+
+func (x *primeServiceMaxServer) Send(m *MaxResponse) error {
+	return x.ServerStream.SendMsg(m)
+}
+
+func (x *primeServiceMaxServer) Recv() (*MaxRequest, error) {
+	m := new(MaxRequest)
+	if err := x.ServerStream.RecvMsg(m); err != nil {
+		return nil, err
+	}
+	return m, nil
+}
+
 // PrimeService_ServiceDesc is the grpc.ServiceDesc for PrimeService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -126,6 +318,22 @@ var PrimeService_ServiceDesc = grpc.ServiceDesc{
 			StreamName:    "Prime",
 			Handler:       _PrimeService_Prime_Handler,
 			ServerStreams: true,
+		},
+		{
+			StreamName:    "Average",
+			Handler:       _PrimeService_Average_Handler,
+			ClientStreams: true,
+		},
+		{
+			StreamName:    "Avg",
+			Handler:       _PrimeService_Avg_Handler,
+			ClientStreams: true,
+		},
+		{
+			StreamName:    "Max",
+			Handler:       _PrimeService_Max_Handler,
+			ServerStreams: true,
+			ClientStreams: true,
 		},
 	},
 	Metadata: "calculator.proto",
