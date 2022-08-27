@@ -23,6 +23,6 @@ func main() {
 
 	readBlog(c, id) //valid id
 	readBlog(c, "invalid in")
+	updateBlog(c, id)
 
 }
-
